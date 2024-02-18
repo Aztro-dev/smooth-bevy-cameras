@@ -124,8 +124,8 @@ pub fn default_input_map(
     mut events: EventWriter<ControlEvent>,
     mut mouse_wheel_reader: EventReader<MouseWheel>,
     mut mouse_motion_events: EventReader<MouseMotion>,
-    mouse_buttons: Res<Input<MouseButton>>,
-    keyboard: Res<Input<KeyCode>>,
+    mouse_buttons: Res<ButtonInput<MouseButton>>,
+    keyboard: Res<ButtonInput<KeyCode>>,
     controllers: Query<&OrbitCameraController>,
 ) {
     // Can only control one camera at a time.
@@ -143,7 +143,7 @@ pub fn default_input_map(
     } = *controller;
 
     let mut cursor_delta = Vec2::ZERO;
-    for event in mouse_motion_events.iter() {
+    for event in mouse_motion_events.read() {
         cursor_delta += event.delta;
     }
 
@@ -168,7 +168,7 @@ pub fn default_input_map(
     }
 
     let mut scalar = 1.0;
-    for event in mouse_wheel_reader.iter() {
+    for event in mouse_wheel_reader.read() {
         // scale the event magnitude per pixel or per line
         let scroll_amount = match event.unit {
             MouseScrollUnit::Line => event.y,
@@ -197,7 +197,7 @@ pub fn control_system(
     let radius = transform.radius();
 
     let dt = time.delta_seconds();
-    for event in events.iter() {
+    for event in events.read() {
         match event {
             ControlEvent::Orbit(delta) => {
                 look_angles.add_yaw(dt * -delta.x);

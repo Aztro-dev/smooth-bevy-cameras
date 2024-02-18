@@ -92,7 +92,7 @@ define_on_controller_enabled_changed!(FpsCameraController);
 
 pub fn default_input_map(
     mut events: EventWriter<ControlEvent>,
-    keyboard: Res<Input<KeyCode>>,
+    keyboard: Res<ButtonInput<KeyCode>>,
     mut mouse_motion_events: EventReader<MouseMotion>,
     controllers: Query<&FpsCameraController>,
 ) {
@@ -109,7 +109,7 @@ pub fn default_input_map(
     } = *controller;
 
     let mut cursor_delta = Vec2::ZERO;
-    for event in mouse_motion_events.iter() {
+    for event in mouse_motion_events.read() {
         cursor_delta += event.delta;
     }
 
@@ -118,10 +118,10 @@ pub fn default_input_map(
     ));
 
     for (key, dir) in [
-        (KeyCode::W, Vec3::Z),
-        (KeyCode::A, Vec3::X),
-        (KeyCode::S, -Vec3::Z),
-        (KeyCode::D, -Vec3::X),
+        (KeyCode::KeyW, Vec3::Z),
+        (KeyCode::KeyA, Vec3::X),
+        (KeyCode::KeyS, -Vec3::Z),
+        (KeyCode::KeyD, -Vec3::X),
         (KeyCode::ShiftLeft, -Vec3::Y),
         (KeyCode::Space, Vec3::Y),
     ]
@@ -155,7 +155,7 @@ pub fn control_system(
     let rot_z = yaw_rot * Vec3::Z;
 
     let dt = time.delta_seconds();
-    for event in events.iter() {
+    for event in events.read() {
         match event {
             ControlEvent::Rotate(delta) => {
                 // Rotates with pitch and yaw.
